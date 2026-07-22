@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+
+.vscode/
+
+.env
+
+*.keras
+*.h5
+
+tempCodeRunnerFile.py
+
+.DS_Store

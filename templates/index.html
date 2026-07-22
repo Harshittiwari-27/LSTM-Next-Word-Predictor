@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Word</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Caveat:wght@600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <main class="desk">
+        <div class="card" id="card">
+
+            <div class="stamp-badge">
+                <span>MODEL&nbsp;TESTED</span>
+            </div>
+
+            <h1>What word comes next?</h1>
+            <p class="lede">Write a sentence and leave it unfinished. The model will guess the word you were about to type.</p>
+
+            <form action="/process" method="POST" id="predict-form">
+
+                <label for="d1" class="field-label">your sentence</label>
+                <textarea
+                    name="d1"
+                    id="d1"
+                    placeholder="the future of artificial intelligence is..."
+                    required
+                    spellcheck="false"></textarea>
+
+                <div class="row">
+                    <p class="note">Trained on an LSTM — it's guessing, not thinking.</p>
+                    <button type="submit" id="run-btn">
+                        Predict it
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Caveat:wght@600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <main class="desk">
+        <div class="card" id="card">
+
+            <div class="stamp-badge stamp-badge--done">
+                <span>MATCH&nbsp;FOUND</span>
+            </div>
+
+            <h1>Here's its guess.</h1>
+            <p class="lede">Circled below — the highest-confidence word the model landed on.</p>
+
+            <div class="answer-wrap">
+                <svg class="circle-mark" viewBox="0 0 220 90" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M 14 46
+                             C 10 20, 60 8, 110 9
+                             C 165 10, 210 20, 206 46
+                             C 210 74, 160 84, 110 83
+                             C 58 82, 8 72, 14 46 Z" />
+                </svg>
+                <span class="answer-text">{{ result }}</span>
+                <span class="answer-note">best guess →</span>
+            </div>
+
+            <div class="row">
+                <p class="note">Confidence comes from the model's final softmax layer.</p>
+                <a href="/" class="btn-link">
+                    <button type="button">Try another</button>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

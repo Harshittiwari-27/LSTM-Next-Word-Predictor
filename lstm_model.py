@@ -275,44 +275,71 @@ Soft skill sessions
 Sessions with industry mentors
 Discussion on Job hunting strategies
 """
-import tensorflow as tf
-from tensorflow.keras.preprocessing.text import Tokenizer
-tokenizer=Tokenizer()
-tokenizer.fit_on_texts([faqs])
-#len(tokenizer.word_index)
-input_sequences=[]
-for sentence in faqs.split("\n"):
-  tokenized_sentence=tokenizer.texts_to_sequences([sentence])[0]
-  for i in range(1,len(tokenized_sentence)):
-    input_sequences.append(tokenized_sentence[:i+1])
-max_len=max([len(x) for x in input_sequences])
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-padded_input_sequences=pad_sequences(input_sequences,maxlen=max_len,padding='pre')
-x=padded_input_sequences[:,:-1]
-y=padded_input_sequences[:,-1]
-from tensorflow.keras.utils import to_categorical
-y=to_categorical(y,num_classes=283)
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding,LSTM,Dense
-model=Sequential()
-model.add(Embedding(283,100,input_length=56))
-model.add(LSTM(150))
-model.add(Dense(283,activation='softmax'))
-model.compile(loss="categorical_crossentropy",optimizer='adam',metrics=['accuracy'])
-
-
-model.fit(x,y,epochs=10)
+import pickle
 import numpy as np
 
-_, accuracy = model.evaluate(x, y)
-import time
-def predict_seq(text):
-    for i in range(10):
-        token_text=tokenizer.texts_to_sequences([text])[0]
-        padded_token_text=pad_sequences([token_text],maxlen=56,padding='pre')
-        pos=np.argmax(model.predict(padded_token_text))
-        for word , index in tokenizer.word_index.items():
-            if index==pos:
-                text=text+" "+word
-                time.sleep(2)
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# -----------------------------
+# Load trained model
+# -----------------------------
+model = load_model("next_word_model.keras")
+
+# -----------------------------
+# Load tokenizer
+# -----------------------------
+with open("tokenizer.pkl", "rb") as f:
+    tokenizer = pickle.load(f)
+
+# -----------------------------
+# Load maximum sequence length
+# -----------------------------
+with open("max_len.pkl", "rb") as f:
+    max_len = pickle.load(f)
+
+
+def predict_seq(text, num_words=10):
+    """
+    Predict next words using the trained LSTM model.
+    """
+
+    text = text.lower().strip()
+
+    for _ in range(num_words):
+
+        # Convert input text to sequence
+        token_text = tokenizer.texts_to_sequences([text])[0]
+
+        # Pad sequence
+        padded = pad_sequences(
+            [token_text],
+            maxlen=max_len - 1,
+            padding="pre"
+        )
+
+        # Predict probabilities
+        prediction = model.predict(padded, verbose=0)
+
+        # Highest probability index
+        predicted_index = np.argmax(prediction)
+
+        # Ignore padding token
+        if predicted_index == 0:
+            break
+
+        # Convert index back to word
+        predicted_word = tokenizer.index_word.get(predicted_index)
+
+        if predicted_word is None:
+            break
+
+        # Prevent infinite repetition
+        words = text.split()
+
+        if len(words) > 0 and predicted_word == words[-1]:
+            break
+
+        text += " " + predicted_word
+
     return text
